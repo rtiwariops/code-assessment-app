@@ -7,10 +7,7 @@ const LANGUAGES = [
   { id: 'python', name: 'Python', icon: '🐍', ext: 'py' },
   { id: 'javascript', name: 'JavaScript', icon: '⚡', ext: 'js' },
   { id: 'java', name: 'Java', icon: '☕', ext: 'java' },
-  { id: 'cpp', name: 'C++', icon: '⚙️', ext: 'cpp' },
-  { id: 'c', name: 'C', icon: '🔧', ext: 'c' },
   { id: 'go', name: 'Go', icon: '🔵', ext: 'go' },
-  { id: 'rust', name: 'Rust', icon: '🦀', ext: 'rs' },
   { id: 'scala', name: 'Scala', icon: '🔴', ext: 'scala' },
 ]
 
