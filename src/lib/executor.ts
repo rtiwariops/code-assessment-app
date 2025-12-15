@@ -11,9 +11,24 @@ const LAMBDA_FUNCTIONS: Record<string, string> = {
   scala: 'maximizehire-scala-executor'
 }
 
-const lambdaClient = new LambdaClient({
-  region: process.env.AWS_REGION || 'us-west-2'
-})
+// Create Lambda client with explicit credentials
+function createLambdaClient() {
+  const region = process.env.AWS_REGION || 'us-west-2'
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('AWS credentials not configured')
+  }
+
+  return new LambdaClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey
+    }
+  })
+}
 
 export interface ExecutionResult {
   success: boolean
@@ -60,23 +75,35 @@ export async function executeCode(language: string, code: string): Promise<Execu
   }
 
   try {
+    const lambdaClient = createLambdaClient()
     const functionName = LAMBDA_FUNCTIONS[language]
 
+    // Encode code to base64
+    const base64Code = Buffer.from(code, 'utf-8').toString('base64')
+
     const payload = {
-      code: Buffer.from(code).toString('base64'),
+      code: base64Code,
       isFinalSubmission: 'false',
       requestAIValidation: 'false'
     }
 
+    console.log(`Invoking Lambda: ${functionName}`)
+    console.log(`Code length: ${code.length}, Base64 length: ${base64Code.length}`)
+
     const command = new InvokeCommand({
       FunctionName: functionName,
-      Payload: JSON.stringify(payload),
+      Payload: Buffer.from(JSON.stringify(payload)),
       InvocationType: 'RequestResponse'
     })
 
     const response = await lambdaClient.send(command)
 
+    console.log(`Lambda response status: ${response.StatusCode}`)
+
     if (response.FunctionError) {
+      console.error(`Lambda function error: ${response.FunctionError}`)
+      const errorPayload = response.Payload ? new TextDecoder().decode(response.Payload) : 'Unknown error'
+      console.error(`Error payload: ${errorPayload}`)
       return {
         success: false,
         error: `Execution error: ${response.FunctionError}`,
@@ -93,11 +120,13 @@ export async function executeCode(language: string, code: string): Promise<Execu
     }
 
     const responseString = new TextDecoder().decode(response.Payload)
-    let lambdaResponse
+    console.log(`Raw response: ${responseString.substring(0, 500)}`)
 
+    let lambdaResponse
     try {
       lambdaResponse = JSON.parse(responseString)
-    } catch {
+    } catch (e) {
+      console.error(`Failed to parse response: ${e}`)
       return {
         success: false,
         error: 'Invalid response from execution service',
@@ -107,14 +136,23 @@ export async function executeCode(language: string, code: string): Promise<Execu
 
     // Handle Lambda response
     if (lambdaResponse.statusCode && lambdaResponse.body) {
-      const bodyData = JSON.parse(lambdaResponse.body)
-      return {
-        success: bodyData.success || false,
-        output: bodyData.output || bodyData.stdout || '',
-        stdout: bodyData.stdout || '',
-        stderr: bodyData.stderr || '',
-        error: bodyData.error || '',
-        executionTime: bodyData.executionTime || (Date.now() - startTime)
+      try {
+        const bodyData = JSON.parse(lambdaResponse.body)
+        return {
+          success: bodyData.success || false,
+          output: bodyData.output || bodyData.stdout || '',
+          stdout: bodyData.stdout || '',
+          stderr: bodyData.stderr || '',
+          error: bodyData.error || '',
+          executionTime: bodyData.executionTime || (Date.now() - startTime)
+        }
+      } catch (e) {
+        console.error(`Failed to parse body: ${e}`)
+        return {
+          success: false,
+          error: 'Invalid response body from execution service',
+          executionTime: Date.now() - startTime
+        }
       }
     }
 
@@ -129,9 +167,10 @@ export async function executeCode(language: string, code: string): Promise<Execu
 
   } catch (error) {
     console.error('Execution error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return {
       success: false,
-      error: `Execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      error: `Execution failed: ${errorMessage}`,
       executionTime: Date.now() - startTime
     }
   }
