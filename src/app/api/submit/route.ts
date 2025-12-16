@@ -1,5 +1,32 @@
 import { NextResponse } from 'next/server'
 import { uploadToS3 } from '@/lib/s3'
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
+
+const snsClient = new SNSClient({
+  region: process.env.AWS_REGION || 'us-west-2'
+})
+
+async function sendSMSNotification(language: string, uuid: string) {
+  const phoneNumber = process.env.RECRUITER_PHONE
+  if (!phoneNumber) {
+    console.log('No RECRUITER_PHONE configured, skipping SMS')
+    return
+  }
+
+  try {
+    const reviewUrl = `https://code.maximizehire.ai/review/${uuid}`
+    const message = `New code submission!\nLanguage: ${language}\nReview: ${reviewUrl}`
+
+    await snsClient.send(new PublishCommand({
+      PhoneNumber: phoneNumber,
+      Message: message
+    }))
+    console.log('SMS notification sent successfully')
+  } catch (error) {
+    console.error('Failed to send SMS:', error)
+    // Don't throw - SMS failure shouldn't fail the submission
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -38,6 +65,9 @@ export async function POST(request: Request) {
         'language': language
       }
     })
+
+    // Send SMS notification (non-blocking)
+    sendSMSNotification(language, uuid)
 
     return NextResponse.json({
       success: true,
