@@ -50,10 +50,7 @@ const CODE_TEMPLATES: Record<string, string> = {
 #
 # Instructions:
 # 1. Implement the RunningAverage class
-# 2. Use Python's threading primitives for thread-safety
-# 3. Design for efficient computation
-
-import threading
+# 2. Design for efficient computation
 
 # TODO: Implement RunningAverage class
 class RunningAverage:
