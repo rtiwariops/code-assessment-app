@@ -91,8 +91,8 @@ export async function POST(request: Request) {
       }
     })
 
-    // Send email notification (non-blocking)
-    sendEmailNotification(language, uuid, accessCode || 'unknown')
+    // Send email notification
+    await sendEmailNotification(language, uuid, accessCode || 'unknown')
 
     return NextResponse.json({
       success: true,
