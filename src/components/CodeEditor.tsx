@@ -14,240 +14,352 @@ const LANGUAGES = [
 const CODE_TEMPLATES: Record<string, string> = {
   python: `# Running Average Calculator
 #
-# Implement a class that calculates the running average
-# of a stream of numbers.
+# Implement a RunningAverage class to calculate the running average
+# of integer values added. The class should support thread-safe additions
+# and allow retrieval of the current running average.
 #
-# Example:
-#   calc = RunningAverage()
-#   calc.add(10)  → 10.0
-#   calc.add(20)  → 15.0
-#   calc.add(30)  → 20.0
-#   calc.add(5)   → 16.25
+# Example 1:
+#   ra = RunningAverage()
+#   ra.add(1)
+#   ra.add(2)
+#   ra.add(3)
+#   print(ra.get_average())  # Output: 2.0
+#
+# Explanation: (1+2+3)/3 = 2.0
+#
+# Example 2:
+#   ra = RunningAverage()
+#   ra.add(5)
+#   ra.add(10)
+#   print(ra.get_average())  # Output: 7.5
+#   ra.add(15)
+#   print(ra.get_average())  # Output: 10.0
+#
+# Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+#
+# Example 3:
+#   ra = RunningAverage()
+#   print(ra.get_average())  # Output: 0.0
+#
+# Explanation: Initial average is 0.0 before any values added.
+#
+# Constraints:
+# - The add method should be thread-safe
+# - get_average should return a float
+# - Handle large number of additions efficiently
+#
+# Instructions:
+# 1. Implement the RunningAverage class
+# 2. Use Python's threading primitives for thread-safety
+# 3. Design for efficient computation
 
+import threading
+
+# TODO: Implement RunningAverage class
 class RunningAverage:
     def __init__(self):
-        self.numbers = []
+        # Your code here
+        pass
 
-    def add(self, num):
-        self.numbers.append(num)
-        return sum(self.numbers) / len(self.numbers)
+    # TODO: Implement add method (thread-safe)
+    def add(self, value: int) -> None:
+        # Your code here
+        pass
+
+    # TODO: Implement get_average method
+    def get_average(self) -> float:
+        # Your code here
+        return 0.0
 
 
 # Test your solution
 if __name__ == "__main__":
-    calc = RunningAverage()
-    print(f"add(10) → {calc.add(10)}")   # Expected: 10.0
-    print(f"add(20) → {calc.add(20)}")   # Expected: 15.0
-    print(f"add(30) → {calc.add(30)}")   # Expected: 20.0
-    print(f"add(5)  → {calc.add(5)}")    # Expected: 16.25
+    ra = RunningAverage()
+    ra.add(1)
+    ra.add(2)
+    ra.add(3)
+    print(f"Average: {ra.get_average()}")  # Expected: 2.0
 `,
   javascript: `// Running Average Calculator
 //
-// Implement a class that calculates the running average
-// of a stream of numbers.
+// Implement a RunningAverage class to calculate the running average
+// of integer values added. The class should maintain state across
+// multiple additions and return the current average on demand.
 //
-// Example:
-//   const calc = new RunningAverage();
-//   calc.add(10)  → 10
-//   calc.add(20)  → 15
-//   calc.add(30)  → 20
-//   calc.add(5)   → 16.25
+// Example 1:
+//   const ra = new RunningAverage();
+//   ra.add(1);
+//   ra.add(2);
+//   ra.add(3);
+//   console.log(ra.getAverage());  // Output: 2.0
+//
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   const ra = new RunningAverage();
+//   ra.add(5);
+//   ra.add(10);
+//   console.log(ra.getAverage());  // Output: 7.5
+//   ra.add(15);
+//   console.log(ra.getAverage());  // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   const ra = new RunningAverage();
+//   console.log(ra.getAverage());  // Output: 0
+//
+// Explanation: Initial average is 0 before any values added.
+//
+// Constraints:
+// - The add method should accept integers
+// - getAverage should return a number
+// - Handle large number of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage class
+// 2. Consider edge cases (empty state, single value)
+// 3. Design for efficient O(1) average calculation
 
+// TODO: Implement RunningAverage class
 class RunningAverage {
   constructor() {
-    this.numbers = [];
+    // Your code here
   }
 
-  add(num) {
-    this.numbers.push(num);
-    const sum = this.numbers.reduce((a, b) => a + b, 0);
-    return sum / this.numbers.length;
+  // TODO: Implement add method
+  add(value) {
+    // Your code here
+  }
+
+  // TODO: Implement getAverage method
+  getAverage() {
+    // Your code here
+    return 0;
   }
 }
 
 
 // Test your solution
-const calc = new RunningAverage();
-console.log(\`add(10) → \${calc.add(10)}\`);  // Expected: 10
-console.log(\`add(20) → \${calc.add(20)}\`);  // Expected: 15
-console.log(\`add(30) → \${calc.add(30)}\`);  // Expected: 20
-console.log(\`add(5)  → \${calc.add(5)}\`);   // Expected: 16.25
+const ra = new RunningAverage();
+ra.add(1);
+ra.add(2);
+ra.add(3);
+console.log(\`Average: \${ra.getAverage()}\`);  // Expected: 2.0
 `,
   java: `// Running Average Calculator
 //
-// Implement a class that calculates the running average
-// of a stream of numbers.
-
-import java.util.ArrayList;
+// Implement a RunningAverage class to calculate the running average
+// of integer values added. The class should support thread-safe additions
+// and allow retrieval of the current running average.
+//
+// Example 1:
+//   RunningAverage ra = new RunningAverage();
+//   ra.add(1);
+//   ra.add(2);
+//   ra.add(3);
+//   System.out.println(ra.getAverage());  // Output: 2.0
+//
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   RunningAverage ra = new RunningAverage();
+//   ra.add(5);
+//   ra.add(10);
+//   System.out.println(ra.getAverage());  // Output: 7.5
+//   ra.add(15);
+//   System.out.println(ra.getAverage());  // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   RunningAverage ra = new RunningAverage();
+//   System.out.println(ra.getAverage());  // Output: 0.0
+//
+// Explanation: Initial average is 0.0 before any values added.
+//
+// Constraints:
+// - The add method should be thread-safe (use synchronized)
+// - getAverage should return double
+// - Handle large number of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage class
+// 2. Use Java's synchronization for thread-safety
+// 3. Design for high concurrency scenarios
 
 public class Main {
     public static void main(String[] args) {
-        RunningAverage calc = new RunningAverage();
-        System.out.println("add(10) → " + calc.add(10));  // Expected: 10.0
-        System.out.println("add(20) → " + calc.add(20));  // Expected: 15.0
-        System.out.println("add(30) → " + calc.add(30));  // Expected: 20.0
-        System.out.println("add(5)  → " + calc.add(5));   // Expected: 16.25
+        RunningAverage ra = new RunningAverage();
+        ra.add(1);
+        ra.add(2);
+        ra.add(3);
+        System.out.println("Average: " + ra.getAverage());  // Expected: 2.0
     }
 }
 
+// TODO: Implement RunningAverage class
 class RunningAverage {
-    private ArrayList<Double> numbers = new ArrayList<>();
+    // TODO: Add your fields here
 
-    public double add(double num) {
-        numbers.add(num);
-        double sum = 0;
-        for (double n : numbers) sum += n;
-        return sum / numbers.size();
+    public RunningAverage() {
+        // Your code here
     }
-}
-`,
-  cpp: `// Running Average Calculator
-//
-// Implement a class that calculates the running average
-// of a stream of numbers.
 
-#include <iostream>
-#include <vector>
-#include <iomanip>
-
-class RunningAverage {
-private:
-    std::vector<double> numbers;
-public:
-    double add(double num) {
-        numbers.push_back(num);
-        double sum = 0;
-        for (double n : numbers) sum += n;
-        return sum / numbers.size();
+    // TODO: Implement add method (thread-safe)
+    public synchronized void add(int value) {
+        // Your code here
     }
-};
 
-int main() {
-    RunningAverage calc;
-    std::cout << std::fixed << std::setprecision(2);
-    std::cout << "add(10) → " << calc.add(10) << std::endl;  // Expected: 10
-    std::cout << "add(20) → " << calc.add(20) << std::endl;  // Expected: 15
-    std::cout << "add(30) → " << calc.add(30) << std::endl;  // Expected: 20
-    std::cout << "add(5)  → " << calc.add(5) << std::endl;   // Expected: 16.25
-    return 0;
-}
-`,
-  c: `// Running Average Calculator
-//
-// Implement functions that calculate the running average
-// of a stream of numbers.
-
-#include <stdio.h>
-
-#define MAX_NUMBERS 1000
-
-typedef struct {
-    double numbers[MAX_NUMBERS];
-    int count;
-} RunningAverage;
-
-void init(RunningAverage* ra) {
-    ra->count = 0;
-}
-
-double add(RunningAverage* ra, double num) {
-    ra->numbers[ra->count++] = num;
-    double sum = 0;
-    for (int i = 0; i < ra->count; i++) {
-        sum += ra->numbers[i];
+    // TODO: Implement getAverage method
+    public synchronized double getAverage() {
+        // Your code here
+        return 0.0;
     }
-    return sum / ra->count;
-}
-
-int main() {
-    RunningAverage calc;
-    init(&calc);
-    printf("add(10) → %.2f\\n", add(&calc, 10));  // Expected: 10.00
-    printf("add(20) → %.2f\\n", add(&calc, 20));  // Expected: 15.00
-    printf("add(30) → %.2f\\n", add(&calc, 30));  // Expected: 20.00
-    printf("add(5)  → %.2f\\n", add(&calc, 5));   // Expected: 16.25
-    return 0;
 }
 `,
   go: `// Running Average Calculator
 //
-// Implement a struct that calculates the running average
-// of a stream of numbers.
+// Implement a RunningAverage struct to calculate the running average
+// of integer values added. The struct should support concurrent additions
+// and allow retrieval of the current running average.
+//
+// Example 1:
+//   ra := NewRunningAverage()
+//   ra.Add(1)
+//   ra.Add(2)
+//   ra.Add(3)
+//   fmt.Println(ra.GetAverage()) // Output: 2.0
+//
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   ra := NewRunningAverage()
+//   ra.Add(5)
+//   ra.Add(10)
+//   fmt.Println(ra.GetAverage()) // Output: 7.5
+//   ra.Add(15)
+//   fmt.Println(ra.GetAverage()) // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   ra := NewRunningAverage()
+//   fmt.Println(ra.GetAverage()) // Output: 0.0
+//
+// Explanation: Initial average is 0.0 before any values added.
+//
+// Constraints:
+// - The Add method should be thread-safe
+// - GetAverage should return float64
+// - Handle large number of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage struct
+// 2. Use sync.Mutex or sync.RWMutex for thread-safety
+// 3. Design for high concurrency scenarios
 
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "sync"
+)
 
+// TODO: Implement RunningAverage struct
 type RunningAverage struct {
-    numbers []float64
+    // Your fields here
+    mu sync.Mutex
 }
 
-func (ra *RunningAverage) Add(num float64) float64 {
-    ra.numbers = append(ra.numbers, num)
-    var sum float64
-    for _, n := range ra.numbers {
-        sum += n
-    }
-    return sum / float64(len(ra.numbers))
+// TODO: Implement NewRunningAverage constructor
+func NewRunningAverage() *RunningAverage {
+    // Your code here
+    return nil
+}
+
+// TODO: Implement Add method (thread-safe)
+func (ra *RunningAverage) Add(value int) {
+    // Your code here
+}
+
+// TODO: Implement GetAverage method
+func (ra *RunningAverage) GetAverage() float64 {
+    // Your code here
+    return 0.0
 }
 
 func main() {
-    calc := &RunningAverage{}
-    fmt.Printf("Add(10) → %.2f\\n", calc.Add(10))  // Expected: 10
-    fmt.Printf("Add(20) → %.2f\\n", calc.Add(20))  // Expected: 15
-    fmt.Printf("Add(30) → %.2f\\n", calc.Add(30))  // Expected: 20
-    fmt.Printf("Add(5)  → %.2f\\n", calc.Add(5))   // Expected: 16.25
-}
-`,
-  rust: `// Running Average Calculator
-//
-// Implement a struct that calculates the running average
-// of a stream of numbers.
-
-struct RunningAverage {
-    numbers: Vec<f64>,
-}
-
-impl RunningAverage {
-    fn new() -> Self {
-        RunningAverage { numbers: Vec::new() }
-    }
-
-    fn add(&mut self, num: f64) -> f64 {
-        self.numbers.push(num);
-        let sum: f64 = self.numbers.iter().sum();
-        sum / self.numbers.len() as f64
-    }
-}
-
-fn main() {
-    let mut calc = RunningAverage::new();
-    println!("add(10) → {:.2}", calc.add(10.0));  // Expected: 10
-    println!("add(20) → {:.2}", calc.add(20.0));  // Expected: 15
-    println!("add(30) → {:.2}", calc.add(30.0));  // Expected: 20
-    println!("add(5)  → {:.2}", calc.add(5.0));   // Expected: 16.25
+    ra := NewRunningAverage()
+    ra.Add(1)
+    ra.Add(2)
+    ra.Add(3)
+    fmt.Printf("Average: %.1f\\n", ra.GetAverage())  // Expected: 2.0
 }
 `,
   scala: `// Running Average Calculator
 //
-// Implement a class that calculates the running average
-// of a stream of numbers.
+// Implement a RunningAverage class to calculate the running average
+// of integer values added. The class should support thread-safe additions
+// and allow retrieval of the current running average.
+//
+// Example 1:
+//   val ra = new RunningAverage()
+//   ra.add(1)
+//   ra.add(2)
+//   ra.add(3)
+//   println(ra.getAverage)  // Output: 2.0
+//
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   val ra = new RunningAverage()
+//   ra.add(5)
+//   ra.add(10)
+//   println(ra.getAverage)  // Output: 7.5
+//   ra.add(15)
+//   println(ra.getAverage)  // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   val ra = new RunningAverage()
+//   println(ra.getAverage)  // Output: 0.0
+//
+// Explanation: Initial average is 0.0 before any values added.
+//
+// Constraints:
+// - The add method should be thread-safe (use synchronized)
+// - getAverage should return Double
+// - Handle large number of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage class
+// 2. Use Scala's synchronized blocks for thread-safety
+// 3. Consider using immutable collections with atomic references
 
-object Main extends App {
-  val calc = new RunningAverage()
-  println("add(10) → " + calc.add(10))  // Expected: 10.0
-  println("add(20) → " + calc.add(20))  // Expected: 15.0
-  println("add(30) → " + calc.add(30))  // Expected: 20.0
-  println("add(5)  → " + calc.add(5))   // Expected: 16.25
+// TODO: Implement RunningAverage class
+class RunningAverage {
+  // TODO: Add your fields here
+
+  // TODO: Implement add method (thread-safe)
+  def add(value: Int): Unit = synchronized {
+    // Your code here
+  }
+
+  // TODO: Implement getAverage method
+  def getAverage: Double = synchronized {
+    // Your code here
+    0.0
+  }
 }
 
-class RunningAverage {
-  private var numbers: List[Double] = List()
-
-  def add(num: Double): Double = {
-    numbers = numbers :+ num
-    numbers.sum / numbers.length
-  }
+object Main extends App {
+  val ra = new RunningAverage()
+  ra.add(1)
+  ra.add(2)
+  ra.add(3)
+  println(s"Average: ${"$"}{ra.getAverage}")  // Expected: 2.0
 }
 `,
 }
