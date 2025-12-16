@@ -1,30 +1,55 @@
 import { NextResponse } from 'next/server'
 import { uploadToS3 } from '@/lib/s3'
-import { SNSClient, PublishCommand } from '@aws-sdk/client-sns'
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
 
-const snsClient = new SNSClient({
-  region: process.env.AWS_REGION || 'us-west-2'
+const sesClient = new SESClient({
+  region: process.env.AWS_SES_REGION || 'us-west-2'
 })
 
-async function sendSMSNotification(language: string, uuid: string) {
-  const phoneNumber = process.env.RECRUITER_PHONE
-  if (!phoneNumber) {
-    console.log('No RECRUITER_PHONE configured, skipping SMS')
+async function sendEmailNotification(language: string, uuid: string, accessCode: string) {
+  const recipientEmail = process.env.RECRUITER_EMAIL
+  if (!recipientEmail) {
+    console.log('No RECRUITER_EMAIL configured, skipping email')
     return
   }
 
   try {
     const reviewUrl = `https://code.maximizehire.ai/review/${uuid}`
-    const message = `New code submission!\nLanguage: ${language}\nReview: ${reviewUrl}`
 
-    await snsClient.send(new PublishCommand({
-      PhoneNumber: phoneNumber,
-      Message: message
+    await sesClient.send(new SendEmailCommand({
+      Source: 'noreply@maximizehire.ai',
+      Destination: {
+        ToAddresses: [recipientEmail]
+      },
+      Message: {
+        Subject: {
+          Data: `New Code Submission - ${language.toUpperCase()}`
+        },
+        Body: {
+          Html: {
+            Data: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #7c3aed;">New Code Assessment Submission</h2>
+                <p>A candidate has submitted their code assessment.</p>
+                <table style="margin: 20px 0;">
+                  <tr><td style="padding: 8px 16px 8px 0; color: #666;">Language:</td><td style="font-weight: bold;">${language.toUpperCase()}</td></tr>
+                  <tr><td style="padding: 8px 16px 8px 0; color: #666;">Access Code:</td><td style="font-family: monospace;">${accessCode}</td></tr>
+                  <tr><td style="padding: 8px 16px 8px 0; color: #666;">Time:</td><td>${new Date().toLocaleString()}</td></tr>
+                </table>
+                <a href="${reviewUrl}" style="display: inline-block; background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 16px;">Review Submission</a>
+                <p style="margin-top: 24px; color: #666; font-size: 14px;">Or copy this link: ${reviewUrl}</p>
+              </div>
+            `
+          },
+          Text: {
+            Data: `New Code Submission\n\nLanguage: ${language}\nAccess Code: ${accessCode}\n\nReview: ${reviewUrl}`
+          }
+        }
+      }
     }))
-    console.log('SMS notification sent successfully')
+    console.log('Email notification sent successfully')
   } catch (error) {
-    console.error('Failed to send SMS:', error)
-    // Don't throw - SMS failure shouldn't fail the submission
+    console.error('Failed to send email:', error)
   }
 }
 
@@ -66,8 +91,8 @@ export async function POST(request: Request) {
       }
     })
 
-    // Send SMS notification (non-blocking)
-    sendSMSNotification(language, uuid)
+    // Send email notification (non-blocking)
+    sendEmailNotification(language, uuid, accessCode || 'unknown')
 
     return NextResponse.json({
       success: true,
