@@ -4,6 +4,17 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Editor from '@monaco-editor/react'
 
+interface Telemetry {
+  durationMs: number
+  tabSwitches: number
+  focusLossCount: number
+  focusLossMs: number
+  pasteCount: number
+  pastedChars: number
+  largestPaste: number
+  copyCount: number
+}
+
 interface Submission {
   id: string
   code: string
@@ -13,6 +24,9 @@ interface Submission {
   timestamp: string
   ip: string
   userAgent: string
+  telemetry?: Telemetry | null
+  integrity?: { aiLikelihood: number; reasoning: string } | null
+  riskScore?: 'low' | 'medium' | 'high'
 }
 
 export default function ReviewPage() {
@@ -112,6 +126,55 @@ export default function ReviewPage() {
             <p className="text-gray-300 font-mono text-sm">{submission.ip}</p>
           </div>
         </div>
+
+        {/* Integrity / anti-cheat signals */}
+        {(submission.telemetry || submission.integrity || submission.riskScore) && (() => {
+          const risk = submission.riskScore || 'low'
+          const badge = risk === 'high'
+            ? 'bg-red-500/15 text-red-400 border-red-500/30'
+            : risk === 'medium'
+            ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+            : 'bg-green-500/15 text-green-400 border-green-500/30'
+          const t = submission.telemetry
+          const secs = t ? Math.round(t.durationMs / 1000) : null
+          const fmtTime = secs === null ? '—' : secs >= 60 ? `${Math.floor(secs / 60)}m ${secs % 60}s` : `${secs}s`
+          const stats = t ? [
+            { label: 'Tab switches', value: String(t.tabSwitches) },
+            { label: 'Focus lost', value: `${t.focusLossCount}× (${Math.round(t.focusLossMs / 1000)}s)` },
+            { label: 'Pastes', value: `${t.pasteCount} (${t.pastedChars} chars)` },
+            { label: 'Largest paste', value: `${t.largestPaste} chars` },
+            { label: 'Copies', value: String(t.copyCount) },
+            { label: 'Time on task', value: fmtTime },
+          ] : []
+          return (
+            <div className="mb-8 bg-gray-800 rounded-lg border border-gray-700 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Integrity
+                </h2>
+                <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${badge}`}>{risk.toUpperCase()} RISK</span>
+              </div>
+              {stats.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                  {stats.map(s => (
+                    <div key={s.label}>
+                      <p className="text-gray-400 text-xs mb-1">{s.label}</p>
+                      <p className="text-white font-mono text-sm">{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {submission.integrity && (
+                <div className="border-t border-gray-700 pt-3">
+                  <p className="text-gray-400 text-xs mb-1">AI-generated likelihood</p>
+                  <p className="text-white text-sm"><span className="font-mono font-semibold">{submission.integrity.aiLikelihood}%</span> — {submission.integrity.reasoning}</p>
+                </div>
+              )}
+              <p className="text-gray-500 text-xs mt-4">Advisory signals only — bypassable, not proof. Review closely; don&apos;t auto-reject.</p>
+            </div>
+          )
+        })()}
 
         {/* Code */}
         <div className="mb-8">

@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Editor from '@monaco-editor/react'
+import { sendGAEvent } from '@next/third-parties/google'
+import { ProctoringCollector } from '@/lib/proctoring'
 
 const LANGUAGES = [
   { id: 'python', name: 'Python', icon: '🐍', ext: 'py' },
@@ -474,18 +476,30 @@ export default function CodeEditor({ accessCode }: CodeEditorProps) {
   const [submitted, setSubmitted] = useState(false)
   const [execTime, setExecTime] = useState<number | null>(null)
   const editorRef = useRef<any>(null)
+  const proctorRef = useRef<ProctoringCollector | null>(null)
+
+  // Integrity/telemetry collector — starts when the assessment editor mounts,
+  // captures tab-switch/focus/paste/copy/timing signals (soft, record-only).
+  useEffect(() => {
+    const p = new ProctoringCollector()
+    proctorRef.current = p
+    p.start()
+    return () => { p.dispose(); proctorRef.current = null }
+  }, [])
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang)
     setCode(CODE_TEMPLATES[newLang] || '')
     setOutput('')
     setExecTime(null)
+    sendGAEvent('event', 'language_selected', { language: newLang })
   }
 
   const handleRun = async () => {
     setIsRunning(true)
     setOutput('')
     setExecTime(null)
+    sendGAEvent('event', 'code_run', { language })
 
     try {
       const response = await fetch('/api/execute', {
@@ -511,12 +525,14 @@ export default function CodeEditor({ accessCode }: CodeEditorProps) {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
+    const telemetry = proctorRef.current?.snapshot()
+    sendGAEvent('event', 'code_submitted', { language })
 
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language, output, accessCode }),
+        body: JSON.stringify({ code, language, output, accessCode, telemetry }),
       })
 
       const result = await response.json()
@@ -662,7 +678,17 @@ export default function CodeEditor({ accessCode }: CodeEditorProps) {
               value={code}
               onChange={(value) => setCode(value || '')}
               theme="vs-dark"
-              onMount={(editor) => { editorRef.current = editor }}
+              onMount={(editor) => {
+                editorRef.current = editor
+                const dom = editor.getDomNode()
+                if (dom) {
+                  dom.addEventListener('paste', (e: ClipboardEvent) => {
+                    const text = e.clipboardData?.getData('text') || ''
+                    proctorRef.current?.recordPaste(text.length)
+                  })
+                  dom.addEventListener('copy', () => proctorRef.current?.recordCopy())
+                }
+              }}
               options={{
                 fontSize: 14,
                 fontFamily: "'JetBrains Mono', 'Fira Code', Menlo, Monaco, monospace",

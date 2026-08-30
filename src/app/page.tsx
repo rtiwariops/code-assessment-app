@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import { sendGAEvent } from '@next/third-parties/google'
 
 const CodeEditor = dynamic(() => import('@/components/CodeEditor'), { ssr: false })
 
@@ -32,6 +33,7 @@ export default function CodeAssessmentPage() {
     }
     if (VALID_ACCESS_CODES.includes(normalizedCode)) {
       localStorage.setItem('code-assessment-auth', normalizedCode)
+      sendGAEvent('event', 'assessment_started', { access_code: normalizedCode })
       setIsAuthenticated(true)
     } else {
       setError('Invalid access code')
