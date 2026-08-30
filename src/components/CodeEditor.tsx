@@ -9,6 +9,7 @@ const LANGUAGES = [
   { id: 'java', name: 'Java', icon: '☕', ext: 'java' },
   { id: 'go', name: 'Go', icon: '🔵', ext: 'go' },
   { id: 'scala', name: 'Scala', icon: '🔴', ext: 'scala' },
+  { id: 'rust', name: 'Rust', icon: '🦀', ext: 'rs' },
 ]
 
 const CODE_TEMPLATES: Record<string, string> = {
@@ -357,6 +358,59 @@ object Main extends App {
   ra.add(2)
   ra.add(3)
   println(s"Average: ${"$"}{ra.getAverage}")  // Expected: 2.0
+}
+`,
+  rust: `// Running Average Calculator
+//
+// Implement a RunningAverage struct to calculate the running average
+// of integer values added. Support adding values and retrieving the
+// current running average.
+//
+// Example:
+//   let mut ra = RunningAverage::new();
+//   ra.add(1);
+//   ra.add(2);
+//   ra.add(3);
+//   println!("{}", ra.get_average()); // Output: 2.0
+//
+// Explanation: (1 + 2 + 3) / 3 = 2.0
+//
+// Constraints:
+// - get_average should return f64
+// - Return 0.0 before any values have been added
+//
+// Instructions:
+// 1. Implement the RunningAverage struct (track sum and count)
+// 2. Implement add and get_average
+// 3. Handle the empty state
+
+struct RunningAverage {
+    // TODO: add your fields here
+    sum: i64,
+    count: i64,
+}
+
+impl RunningAverage {
+    fn new() -> Self {
+        RunningAverage { sum: 0, count: 0 }
+    }
+
+    fn add(&mut self, value: i64) {
+        // Your code here
+    }
+
+    fn get_average(&self) -> f64 {
+        // Your code here
+        0.0
+    }
+}
+
+fn main() {
+    let mut ra = RunningAverage::new();
+    ra.add(1);
+    ra.add(2);
+    ra.add(3);
+    println!("Average: {}", ra.get_average()); // Expected: 2.0
 }
 `,
 }
