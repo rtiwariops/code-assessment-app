@@ -68,14 +68,20 @@ async function checkAiLikelihood(
   code: string,
   language: string
 ): Promise<{ aiLikelihood: number; reasoning: string } | null> {
-  const key = process.env.OPENAI_API_KEY
+  // Prefer OpenRouter if configured, else OpenAI direct. Fail-open on either.
+  const orKey = process.env.OPENROUTER_API_KEY
+  const key = orKey || process.env.OPENAI_API_KEY
   if (!key) return null
+  const url = orKey
+    ? 'https://openrouter.ai/api/v1/chat/completions'
+    : 'https://api.openai.com/v1/chat/completions'
+  const model = orKey ? 'openai/gpt-4o-mini' : 'gpt-4o-mini'
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model,
         temperature: 0.2,
         max_tokens: 300,
         messages: [
