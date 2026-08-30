@@ -10,6 +10,7 @@ const LANGUAGES = [
   { id: 'go', name: 'Go', icon: '🔵', ext: 'go' },
   { id: 'scala', name: 'Scala', icon: '🔴', ext: 'scala' },
   { id: 'rust', name: 'Rust', icon: '🦀', ext: 'rs' },
+  { id: 'swift', name: 'Swift', icon: '🧡', ext: 'swift' },
 ]
 
 const CODE_TEMPLATES: Record<string, string> = {
@@ -412,6 +413,51 @@ fn main() {
     ra.add(3);
     println!("Average: {}", ra.get_average()); // Expected: 2.0
 }
+`,
+  swift: `// Running Average Calculator
+//
+// Implement a RunningAverage class to calculate the running average
+// of integer values added. Support adding values and retrieving the
+// current running average.
+//
+// Example:
+//   let ra = RunningAverage()
+//   ra.add(1)
+//   ra.add(2)
+//   ra.add(3)
+//   print(ra.getAverage())  // Output: 2.0
+//
+// Explanation: (1 + 2 + 3) / 3 = 2.0
+//
+// Constraints:
+// - getAverage should return Double
+// - Return 0.0 before any values have been added
+//
+// Instructions:
+// 1. Implement the RunningAverage class (track sum and count)
+// 2. Implement add and getAverage
+// 3. Handle the empty state
+
+class RunningAverage {
+    // TODO: add your properties here
+    private var sum = 0
+    private var count = 0
+
+    func add(_ value: Int) {
+        // Your code here
+    }
+
+    func getAverage() -> Double {
+        // Your code here
+        return 0.0
+    }
+}
+
+let ra = RunningAverage()
+ra.add(1)
+ra.add(2)
+ra.add(3)
+print("Average: \\(ra.getAverage())")  // Expected: 2.0
 `,
 }
 

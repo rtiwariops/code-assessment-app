@@ -8,7 +8,8 @@ const LAMBDA_FUNCTIONS: Record<string, string> = {
   rust: 'maximizehire-rust-executor',
   cpp: 'maximizehire-cpp-executor',
   c: 'maximizehire-c-executor',
-  scala: 'maximizehire-scala-executor'
+  scala: 'maximizehire-scala-executor',
+  swift: 'maximizehire-swift-executor'
 }
 
 // Create Lambda client with explicit credentials
