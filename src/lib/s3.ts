@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || 'us-west-2'
@@ -29,6 +29,35 @@ export async function uploadToS3({ key, body, contentType, metadata }: UploadOpt
     key,
     url: `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`
   }
+}
+
+// Count all assessment submissions under code-assessments/ and find the earliest
+// date (from the YYYY-MM-DD key segment). Paginates for future-proofing past 1000.
+export async function countAssessments(): Promise<{ total: number; sinceLabel: string }> {
+  let total = 0
+  let earliest: string | null = null
+  let ContinuationToken: string | undefined = undefined
+
+  do {
+    const res: any = await s3Client.send(new ListObjectsV2Command({
+      Bucket: BUCKET_NAME,
+      Prefix: 'code-assessments/',
+      ContinuationToken
+    }))
+    for (const obj of res.Contents || []) {
+      total += 1
+      const m = obj.Key?.match(/code-assessments\/(\d{4}-\d{2}-\d{2})\//)
+      if (m && (!earliest || m[1] < earliest)) earliest = m[1]
+    }
+    ContinuationToken = res.IsTruncated ? res.NextContinuationToken : undefined
+  } while (ContinuationToken)
+
+  const sinceLabel = earliest
+    ? new Date(earliest + 'T00:00:00Z').toLocaleDateString('en-US', {
+        month: 'long', year: 'numeric', timeZone: 'UTC'
+      })
+    : ''
+  return { total, sinceLabel }
 }
 
 export async function getFromS3(key: string): Promise<string | null> {
