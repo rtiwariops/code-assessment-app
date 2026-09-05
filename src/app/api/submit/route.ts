@@ -62,20 +62,16 @@ async function sendEmailNotification(
   }
 }
 
-// AI-generated / plagiarism heuristic. Fail-open: returns null on any error or when
-// no OPENAI_API_KEY is set, so a submission is NEVER blocked by this check.
+// AI-generated / plagiarism heuristic via OpenRouter. Fail-open: returns null on any
+// error or when OPENROUTER_API_KEY is unset, so a submission is NEVER blocked.
 async function checkAiLikelihood(
   code: string,
   language: string
 ): Promise<{ aiLikelihood: number; reasoning: string } | null> {
-  // Prefer OpenRouter if configured, else OpenAI direct. Fail-open on either.
-  const orKey = process.env.OPENROUTER_API_KEY
-  const key = orKey || process.env.OPENAI_API_KEY
+  const key = process.env.OPENROUTER_API_KEY
   if (!key) return null
-  const url = orKey
-    ? 'https://openrouter.ai/api/v1/chat/completions'
-    : 'https://api.openai.com/v1/chat/completions'
-  const model = orKey ? 'openai/gpt-4o-mini' : 'gpt-4o-mini'
+  const url = 'https://openrouter.ai/api/v1/chat/completions'
+  const model = 'openai/gpt-4o-mini'
   try {
     const res = await fetch(url, {
       method: 'POST',
