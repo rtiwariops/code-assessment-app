@@ -71,7 +71,7 @@ async function checkAiLikelihood(
   const key = process.env.OPENROUTER_API_KEY
   if (!key) return null
   const url = 'https://openrouter.ai/api/v1/chat/completions'
-  const model = 'openai/gpt-4o-mini'
+  const model = 'anthropic/claude-opus-4.8'
   try {
     const res = await fetch(url, {
       method: 'POST',
