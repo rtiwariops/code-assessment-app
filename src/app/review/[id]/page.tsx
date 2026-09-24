@@ -168,10 +168,11 @@ export default function ReviewPage() {
               {submission.integrity && (
                 <div className="border-t border-gray-700 pt-3">
                   <p className="text-gray-400 text-xs mb-1">AI-generated likelihood</p>
-                  <p className="text-white text-sm"><span className="font-mono font-semibold">{submission.integrity.aiLikelihood}%</span> — {submission.integrity.reasoning}</p>
+                  <p className="text-white text-sm mb-1"><span className="font-mono font-semibold">{submission.integrity.aiLikelihood}%</span> likely AI-generated</p>
+                  <p className="text-gray-300 text-sm">{submission.integrity.reasoning}</p>
                 </div>
               )}
-              <p className="text-gray-500 text-xs mt-4">Advisory signals only — bypassable, not proof. Review closely; don&apos;t auto-reject.</p>
+              <p className="text-gray-500 text-xs mt-4">Advisory signals only. Bypassable, not proof. Review closely; don&apos;t auto-reject.</p>
             </div>
           )
         })()}
