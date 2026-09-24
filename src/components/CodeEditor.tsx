@@ -13,6 +13,7 @@ const LANGUAGES = [
   { id: 'scala', name: 'Scala', icon: '🔴', ext: 'scala' },
   { id: 'rust', name: 'Rust', icon: '🦀', ext: 'rs' },
   { id: 'swift', name: 'Swift', icon: '🧡', ext: 'swift' },
+  { id: 'terraform', name: 'Terraform', icon: '🏗️', ext: 'tf' },
 ]
 
 const CODE_TEMPLATES: Record<string, string> = {
@@ -460,6 +461,40 @@ ra.add(1)
 ra.add(2)
 ra.add(3)
 print("Average: \\(ra.getAverage())")  // Expected: 2.0
+`,
+  terraform: `# Terraform Assessment: Secure S3 Bucket
+#
+# Define an AWS S3 bucket that satisfies ALL of the following:
+#   1. An S3 bucket named using the variable "bucket_name" below.
+#   2. Versioning ENABLED on the bucket.
+#   3. Server-side encryption enabled with algorithm "AES256".
+#   4. An output named "bucket_arn" that returns the bucket's ARN.
+#
+# Your configuration must pass: terraform fmt, terraform validate, and tflint.
+# Providers are pre-installed and offline. No credentials are used and nothing
+# is ever deployed. This only analyzes your code.
+
+terraform {
+  required_version = ">= 1.5"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-west-2"
+}
+
+variable "bucket_name" {
+  type    = string
+  default = "maximizehire-assessment"
+}
+
+# TODO: Define the S3 bucket, enable versioning and AES256 encryption,
+# and add an output "bucket_arn" with the bucket's ARN.
 `,
 }
 
