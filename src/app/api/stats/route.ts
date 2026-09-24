@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const { total, sinceLabel } = await countAssessments()
     return NextResponse.json(
-      { total, sinceLabel, languages: 8 },
+      { total, sinceLabel, languages: 10 },
       {
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -21,7 +21,7 @@ export async function GET() {
     console.error('Stats error:', error)
     // Fail-soft: landing falls back to a rounded number on null
     return NextResponse.json(
-      { total: null, sinceLabel: '', languages: 8 },
+      { total: null, sinceLabel: '', languages: 10 },
       { headers: { 'Access-Control-Allow-Origin': '*' } }
     )
   }

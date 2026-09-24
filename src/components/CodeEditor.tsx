@@ -9,6 +9,8 @@ const LANGUAGES = [
   { id: 'python', name: 'Python', icon: '🐍', ext: 'py' },
   { id: 'javascript', name: 'JavaScript', icon: '⚡', ext: 'js' },
   { id: 'java', name: 'Java', icon: '☕', ext: 'java' },
+  { id: 'cpp', name: 'C++', icon: '➕', ext: 'cpp' },
+  { id: 'c', name: 'C', icon: '🔧', ext: 'c' },
   { id: 'go', name: 'Go', icon: '🔵', ext: 'go' },
   { id: 'scala', name: 'Scala', icon: '🔴', ext: 'scala' },
   { id: 'rust', name: 'Rust', icon: '🦀', ext: 'rs' },
@@ -495,6 +497,76 @@ variable "bucket_name" {
 
 # TODO: Define the S3 bucket, enable versioning and AES256 encryption,
 # and add an output "bucket_arn" with the bucket's ARN.
+`,
+  cpp: `// Running Average Calculator
+//
+// Implement a RunningAverage class that returns the running average
+// of the integer values added.
+//
+// Example:
+//   RunningAverage ra;
+//   ra.add(1); ra.add(2); ra.add(3);
+//   std::cout << ra.getAverage();  // 2
+//
+// - getAverage() returns a double
+// - Return 0.0 before any values have been added
+
+#include <iostream>
+
+class RunningAverage {
+    // TODO: add your members here
+public:
+    void add(int value) {
+        // TODO
+    }
+
+    double getAverage() const {
+        // TODO
+        return 0.0;
+    }
+};
+
+int main() {
+    RunningAverage ra;
+    ra.add(1);
+    ra.add(2);
+    ra.add(3);
+    std::cout << "Average: " << ra.getAverage() << std::endl;  // Expected: 2
+    return 0;
+}
+`,
+  c: `// Running Average Calculator
+//
+// Implement functions to compute the running average of integers.
+//
+// - ra_get_average returns a double
+// - Return 0.0 before any values have been added
+
+#include <stdio.h>
+
+typedef struct {
+    // TODO: add your fields here
+    long total;
+    int count;
+} RunningAverage;
+
+void ra_add(RunningAverage *ra, int value) {
+    // TODO
+}
+
+double ra_get_average(const RunningAverage *ra) {
+    // TODO
+    return 0.0;
+}
+
+int main(void) {
+    RunningAverage ra = {0, 0};
+    ra_add(&ra, 1);
+    ra_add(&ra, 2);
+    ra_add(&ra, 3);
+    printf("Average: %.1f\\n", ra_get_average(&ra));  // Expected: 2.0
+    return 0;
+}
 `,
 }
 
