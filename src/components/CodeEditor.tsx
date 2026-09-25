@@ -500,28 +500,65 @@ variable "bucket_name" {
 `,
   cpp: `// Running Average Calculator
 //
-// Implement a RunningAverage class that returns the running average
-// of the integer values added.
+// Implement a RunningAverage class to calculate the running average
+// of integer values added. The class should support thread-safe additions
+// and allow retrieval of the current running average.
 //
-// Example:
+// Example 1:
 //   RunningAverage ra;
-//   ra.add(1); ra.add(2); ra.add(3);
-//   std::cout << ra.getAverage();  // 2
+//   ra.add(1);
+//   ra.add(2);
+//   ra.add(3);
+//   std::cout << ra.getAverage();  // Output: 2.0
 //
-// - getAverage() returns a double
-// - Return 0.0 before any values have been added
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   RunningAverage ra;
+//   ra.add(5);
+//   ra.add(10);
+//   std::cout << ra.getAverage();  // Output: 7.5
+//   ra.add(15);
+//   std::cout << ra.getAverage();  // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   RunningAverage ra;
+//   std::cout << ra.getAverage();  // Output: 0.0
+//
+// Explanation: Initial average is 0.0 before any values added.
+//
+// Constraints:
+// - The add method should be thread-safe (use std::mutex)
+// - getAverage should return double
+// - Handle large number of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage class
+// 2. Use std::mutex / std::lock_guard for thread-safety
+// 3. Design for high concurrency scenarios
 
 #include <iostream>
+#include <mutex>
 
+// TODO: Implement RunningAverage class
 class RunningAverage {
-    // TODO: add your members here
+    // TODO: Add your fields here (consider std::mutex)
+
 public:
-    void add(int value) {
-        // TODO
+    RunningAverage() {
+        // Your code here
     }
 
-    double getAverage() const {
-        // TODO
+    // TODO: Implement add method (thread-safe)
+    void add(int value) {
+        // Your code here
+    }
+
+    // TODO: Implement getAverage method
+    double getAverage() {
+        // Your code here
         return 0.0;
     }
 };
@@ -531,36 +568,79 @@ int main() {
     ra.add(1);
     ra.add(2);
     ra.add(3);
-    std::cout << "Average: " << ra.getAverage() << std::endl;  // Expected: 2
+    std::cout << "Average: " << ra.getAverage() << std::endl;  // Expected: 2.0
     return 0;
 }
 `,
   c: `// Running Average Calculator
 //
-// Implement functions to compute the running average of integers.
+// Implement a thread-safe running average over integer values. Support
+// adding values and retrieving the current running average.
 //
-// - ra_get_average returns a double
-// - Return 0.0 before any values have been added
+// Example 1:
+//   RunningAverage ra; ra_init(&ra);
+//   ra_add(&ra, 1);
+//   ra_add(&ra, 2);
+//   ra_add(&ra, 3);
+//   printf("%.1f", ra_get_average(&ra));  // Output: 2.0
+//
+// Explanation: (1+2+3)/3 = 2.0
+//
+// Example 2:
+//   ra_add(&ra, 5);
+//   ra_add(&ra, 10);
+//   printf("%.1f", ra_get_average(&ra));  // Output: 7.5
+//   ra_add(&ra, 15);
+//   printf("%.1f", ra_get_average(&ra));  // Output: 10.0
+//
+// Explanation: (5+10)/2=7.5, then (5+10+15)/3=10.0
+//
+// Example 3:
+//   RunningAverage ra; ra_init(&ra);
+//   printf("%.1f", ra_get_average(&ra));  // Output: 0.0
+//
+// Explanation: Initial average is 0.0 before any values added.
+//
+// Constraints:
+// - ra_add should be thread-safe (use a pthread mutex)
+// - ra_get_average should return double
+// - Handle large numbers of additions efficiently
+//
+// Instructions:
+// 1. Implement the RunningAverage struct and its functions
+// 2. Use pthread_mutex_t for thread-safety
+// 3. Design for high concurrency scenarios
 
 #include <stdio.h>
+#include <pthread.h>
 
+// TODO: Add your fields here (consider a pthread_mutex_t)
 typedef struct {
-    // TODO: add your fields here
     long total;
     int count;
+    pthread_mutex_t lock;
 } RunningAverage;
 
-void ra_add(RunningAverage *ra, int value) {
-    // TODO
+void ra_init(RunningAverage *ra) {
+    ra->total = 0;
+    ra->count = 0;
+    pthread_mutex_init(&ra->lock, NULL);
 }
 
-double ra_get_average(const RunningAverage *ra) {
-    // TODO
+// TODO: Implement add (thread-safe)
+void ra_add(RunningAverage *ra, int value) {
+    // Your code here
+}
+
+// TODO: Implement get_average
+double ra_get_average(RunningAverage *ra) {
+    // Your code here
     return 0.0;
 }
 
 int main(void) {
-    RunningAverage ra = {0, 0};
+    RunningAverage ra;
+    ra_init(&ra);
     ra_add(&ra, 1);
     ra_add(&ra, 2);
     ra_add(&ra, 3);
